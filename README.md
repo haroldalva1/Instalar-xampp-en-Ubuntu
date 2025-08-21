@@ -42,5 +42,5 @@ sudo reboot
 # Verificar que XAMPP se está ejecutando
 sudo /opt/lampp/lampp status
 
-echo "XAMPP Lite instalado correctamente en /opt/lampp"
+echo "XAMPP Lite instalado correctamente en /opt/lampp con puertos predeterminados (80 y 3306)"
 
