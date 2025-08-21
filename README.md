@@ -13,14 +13,25 @@ chmod +x xampp-linux-x64-8.2.4-0-installer.run
 echo "Ejecutando el instalador..."
 sudo ./xampp-linux-x64-8.2.4-0-installer.run
 
-# 4. Iniciar XAMPP
-echo "Iniciando XAMPP..."
-sudo /opt/lampp/lampp start
+# 4. Encontrar la ruta de instalación de XAMPP
+echo "Buscando la ruta de instalación de XAMPP..."
+XAMPP_PATH=$(find / -name lampp -type d 2>/dev/null | head -n 1)
 
-# 5. Habilitar el inicio automático (usando systemd)
+if [ -z "$XAMPP_PATH" ]; then
+  echo "Error: No se pudo encontrar la instalación de XAMPP.  Asegúrate de que XAMPP esté instalado."
+  exit 1
+fi
+
+echo "XAMPP encontrado en: $XAMPP_PATH"
+
+# 5. Iniciar XAMPP
+echo "Iniciando XAMPP..."
+sudo "$XAMPP_PATH/lampp" start
+
+# 6. Habilitar el inicio automático (usando systemd)
 echo "Habilitando el inicio automático..."
 
-# Crear un archivo de servicio systemd
+# Crear un archivo de servicio systemd con la ruta correcta
 cat <<EOF | sudo tee /etc/systemd/system/xampp.service
 [Unit]
 Description=XAMPP
@@ -28,9 +39,9 @@ After=network.target
 
 [Service]
 Type=forking
-PIDFile=/opt/lampp/var/run/lampp.pid
-ExecStart=/opt/lampp/lampp start
-ExecStop=/opt/lampp/lampp stop
+PIDFile=$XAMPP_PATH/var/run/lampp.pid
+ExecStart=$XAMPP_PATH/lampp start
+ExecStop=$XAMPP_PATH/lampp stop
 
 [Install]
 WantedBy=multi-user.target
