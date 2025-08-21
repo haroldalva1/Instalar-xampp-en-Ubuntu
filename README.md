@@ -43,3 +43,4 @@ sudo reboot
 sudo /opt/lampp/lampp status
 
 echo "XAMPP Lite instalado correctamente en /opt/lampp"
+
