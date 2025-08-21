@@ -1,73 +1,45 @@
 #!/bin/bash
 
-# Actualizar el sistema
-echo "Actualizando el sistema..."
-sudo apt update && sudo apt upgrade -y
-
-# Descargar la última versión de XAMPP
+# 1. Descargar XAMPP
 echo "Descargando XAMPP..."
-LATEST_XAMPP_URL=$(curl -s https://www.apachefriends.org/index.html | grep -oP 'https://www.apachefriends.org/xampp-files/\d+\.\d+\.\d+/xampp-linux-x64-\d+\.\d+\.\d+-0-installer.run' | head -1)
+wget https://www.apachefriends.org/xampp-files/8.2.4/xampp-linux-x64-8.2.4-0-installer.run
+#Nota: remplaza la versión con la ultima version en la pagina oficial apachefriends.org
 
-if [ -z "$LATEST_XAMPP_URL" ]; then
-  echo "Error: No se pudo obtener la URL de la última versión de XAMPP."
-  echo "Descargando manualmente la versión 8.2.4..."
-  LATEST_XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.4/xampp-linux-x64-8.2.4-0-installer.run/download"
-fi
-
-wget "$LATEST_XAMPP_URL" -O xampp-installer.run
-
-# Hacer el instalador ejecutable
+# 2. Hacer el instalador ejecutable
 echo "Haciendo el instalador ejecutable..."
-chmod +x xampp-installer.run
+chmod +x xampp-linux-x64-8.2.4-0-installer.run
 
-# Instalar XAMPP
-echo "Instalando XAMPP..."
-sudo ./xampp-installer.run
+# 3. Ejecutar el instalador
+echo "Ejecutando el instalador..."
+sudo ./xampp-linux-x64-8.2.4-0-installer.run
 
-# Verificar si XAMPP está instalado
-if [ ! -f "/opt/lampp/lampp" ]; then
-  echo "Error: XAMPP no se instaló correctamente."
-  exit 1
-fi
-
-# Dar permisos de ejecución a lampp
-echo "Asignando permisos de ejecución a lampp..."
-sudo chmod +x /opt/lampp/lampp
-
-# Iniciar XAMPP
+# 4. Iniciar XAMPP
 echo "Iniciando XAMPP..."
 sudo /opt/lampp/lampp start
 
-# Configurar inicio automático de XAMPP
-echo "Configurando inicio automático de XAMPP..."
+# 5. Habilitar el inicio automático (usando systemd)
+echo "Habilitando el inicio automático..."
 
-# Crear un archivo de servicio para systemd
-sudo bash -c 'cat > /etc/systemd/system/xampp.service <<EOF
+# Crear un archivo de servicio systemd
+cat <<EOF | sudo tee /etc/systemd/system/xampp.service
 [Unit]
 Description=XAMPP
 After=network.target
 
 [Service]
 Type=forking
+PIDFile=/opt/lampp/var/run/lampp.pid
 ExecStart=/opt/lampp/lampp start
 ExecStop=/opt/lampp/lampp stop
-User=root
-Group=root
-Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-EOF'
+EOF
 
-# Recargar systemd y habilitar el servicio
+# Recargar systemd
 sudo systemctl daemon-reload
-sudo systemctl enable xampp
-sudo systemctl start xampp
 
-# Verificar el estado del servicio
-echo "Verificando el estado del servicio..."
-systemctl status xampp.service
+# Habilitar el servicio
+sudo systemctl enable xampp.service
 
-# Mensaje final
-echo "¡XAMPP ha sido instalado, iniciado y configurado para inicio automático!"
-echo "Accede al panel de control en: http://tu-direccion-ip/xampp/"
+echo "¡XAMPP instalado, iniciado y configurado para inicio automático!"
