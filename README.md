@@ -1,59 +1,45 @@
 #!/bin/bash
 
-# 1. Descargar XAMPP
-echo "Descargando XAMPP..."
-wget https://www.apachefriends.org/xampp-files/8.2.4/xampp-linux-x64-8.2.4-0-installer.run
-#Nota: remplaza la versión con la ultima version en la pagina oficial apachefriends.org
+# Descargar XAMPP Lite
+wget https://www.apachefriends.org/xampp-files/8.2.12/xampp-linux-x64-8.2.12-0-installer.run
 
-# 2. Hacer el instalador ejecutable
-echo "Haciendo el instalador ejecutable..."
-chmod +x xampp-linux-x64-8.2.4-0-installer.run
+# Dar permisos de ejecución
+chmod +x xampp-linux-x64-8.2.12-0-installer.run
 
-# 3. Ejecutar el instalador
-echo "Ejecutando el instalador..."
-sudo ./xampp-linux-x64-8.2.4-0-installer.run
+# Ejecutar el instalador
+sudo ./xampp-linux-x64-8.2.12-0-installer.run
 
-# 4. Encontrar la ruta de instalación de XAMPP
-echo "Buscando la ruta de instalación de XAMPP..."
-XAMPP_PATH=$(find / -name lampp -type d 2>/dev/null | head -n 1)
+# Iniciar el servicio XAMPP
+sudo /opt/lampp/lampp start
 
-if [ -z "$XAMPP_PATH" ]; then
-  echo "Error: No se pudo encontrar la instalación de XAMPP. Asegúrate de que XAMPP esté instalado."
-  exit 1
-fi
+# Habilitar el inicio automático de XAMPP
+sudo /opt/lampp/lampp start
 
-echo "XAMPP encontrado en: $XAMPP_PATH"
+# Crear un script para iniciar XAMPP al inicio del sistema
+sudo nano /etc/systemd/system/xampp.service
 
-# **Añade esta línea para imprimir la ruta detectada**
-echo "La ruta detectada es: $XAMPP_PATH"
+# Añadir el siguiente contenido al archivo xampp.service:
+# [Unit]
+# Description=XAMPP
+# After=network.target
 
-# 5. Iniciar XAMPP
-echo "Iniciando XAMPP..."
-sudo "$XAMPP_PATH/lampp" start
+# [Service]
+# ExecStart=/opt/lampp/lampp start
+# ExecStop=/opt/lampp/lampp stop
+# Type=forking
 
-# 6. Habilitar el inicio automático (usando systemd)
-echo "Habilitando el inicio automático..."
+# [Install]
+# WantedBy=multi-user.target
 
-# Crear un archivo de servicio systemd con la ruta correcta
-cat <<EOF | sudo tee /etc/systemd/system/xampp.service
-[Unit]
-Description=XAMPP
-After=network.target
+# Guardar y cerrar el archivo
 
-[Service]
-Type=forking
-PIDFile=$XAMPP_PATH/var/run/lampp.pid
-ExecStart=$XAMPP_PATH/lampp start
-ExecStop=$XAMPP_PATH/lampp stop
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Recargar systemd
-sudo systemctl daemon-reload
-
-# Habilitar el servicio
+# Habilitar el servicio XAMPP
 sudo systemctl enable xampp.service
 
-echo "¡XAMPP instalado, iniciado y configurado para inicio automático!"
+# Reiniciar el sistema para aplicar los cambios
+sudo reboot
+
+# Verificar que XAMPP se está ejecutando
+sudo /opt/lampp/lampp status
+
+echo "XAMPP Lite instalado correctamente en /opt/lampp"
