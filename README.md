@@ -30,19 +30,25 @@ Description=XAMPP
 After=network.target
 
 [Service]
+Type=forking
 ExecStart=/opt/lampp/lampp start
 ExecStop=/opt/lampp/lampp stop
-Type=forking
-Restart=always
+User=root
+Group=root
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF'
 
-# Habilitar y iniciar el servicio
+# Recargar systemd y habilitar el servicio
 sudo systemctl daemon-reload
 sudo systemctl enable xampp
 sudo systemctl start xampp
+
+# Verificar el estado del servicio
+echo "Verificando el estado del servicio..."
+systemctl status xampp.service
 
 # Mensaje final
 echo "¡XAMPP ha sido instalado, iniciado y configurado para inicio automático!"
