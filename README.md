@@ -16,6 +16,16 @@ chmod +x xampp-linux-x64-8.2.4-0-installer.run
 echo "Instalando XAMPP..."
 sudo ./xampp-linux-x64-8.2.4-0-installer.run
 
+# Verificar si XAMPP está instalado
+if [ ! -f "/opt/lampp/lampp" ]; then
+  echo "Error: XAMPP no se instaló correctamente."
+  exit 1
+fi
+
+# Dar permisos de ejecución a lampp
+echo "Asignando permisos de ejecución a lampp..."
+sudo chmod +x /opt/lampp/lampp
+
 # Iniciar XAMPP
 echo "Iniciando XAMPP..."
 sudo /opt/lampp/lampp start
