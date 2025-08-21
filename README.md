@@ -18,11 +18,14 @@ echo "Buscando la ruta de instalación de XAMPP..."
 XAMPP_PATH=$(find / -name lampp -type d 2>/dev/null | head -n 1)
 
 if [ -z "$XAMPP_PATH" ]; then
-  echo "Error: No se pudo encontrar la instalación de XAMPP.  Asegúrate de que XAMPP esté instalado."
+  echo "Error: No se pudo encontrar la instalación de XAMPP. Asegúrate de que XAMPP esté instalado."
   exit 1
 fi
 
 echo "XAMPP encontrado en: $XAMPP_PATH"
+
+# **Añade esta línea para imprimir la ruta detectada**
+echo "La ruta detectada es: $XAMPP_PATH"
 
 # 5. Iniciar XAMPP
 echo "Iniciando XAMPP..."
