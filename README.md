@@ -4,17 +4,24 @@
 echo "Actualizando el sistema..."
 sudo apt update && sudo apt upgrade -y
 
-# Descargar XAMPP (versión 8.2.4)
+# Descargar la última versión de XAMPP
 echo "Descargando XAMPP..."
-wget https://www.apachefriends.org/xampp-files/8.2.4/xampp-linux-x64-8.2.4-0-installer.run
+LATEST_XAMPP_URL=$(curl -s https://www.apachefriends.org/index.html | grep -oP 'https://www.apachefriends.org/xampp-files/\d+\.\d+\.\d+/xampp-linux-x64-\d+\.\d+\.\d+-0-installer.run' | head -1)
+
+if [ -z "$LATEST_XAMPP_URL" ]; then
+  echo "Error: No se pudo obtener la URL de la última versión de XAMPP."
+  exit 1
+fi
+
+wget "$LATEST_XAMPP_URL" -O xampp-installer.run
 
 # Hacer el instalador ejecutable
 echo "Haciendo el instalador ejecutable..."
-chmod +x xampp-linux-x64-8.2.4-0-installer.run
+chmod +x xampp-installer.run
 
 # Instalar XAMPP
 echo "Instalando XAMPP..."
-sudo ./xampp-linux-x64-8.2.4-0-installer.run
+sudo ./xampp-installer.run
 
 # Verificar si XAMPP está instalado
 if [ ! -f "/opt/lampp/lampp" ]; then
