@@ -20,6 +20,30 @@ sudo ./xampp-linux-x64-8.2.4-0-installer.run
 echo "Iniciando XAMPP..."
 sudo /opt/lampp/lampp start
 
+# Configurar inicio automático de XAMPP
+echo "Configurando inicio automático de XAMPP..."
+
+# Crear un archivo de servicio para systemd
+sudo bash -c 'cat > /etc/systemd/system/xampp.service <<EOF
+[Unit]
+Description=XAMPP
+After=network.target
+
+[Service]
+ExecStart=/opt/lampp/lampp start
+ExecStop=/opt/lampp/lampp stop
+Type=forking
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF'
+
+# Habilitar y iniciar el servicio
+sudo systemctl daemon-reload
+sudo systemctl enable xampp
+sudo systemctl start xampp
+
 # Mensaje final
-echo "¡XAMPP ha sido instalado y está en ejecución!"
+echo "¡XAMPP ha sido instalado, iniciado y configurado para inicio automático!"
 echo "Accede al panel de control en: http://tu-direccion-ip/xampp/"
