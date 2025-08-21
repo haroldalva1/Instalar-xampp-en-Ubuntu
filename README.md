@@ -10,7 +10,8 @@ LATEST_XAMPP_URL=$(curl -s https://www.apachefriends.org/index.html | grep -oP '
 
 if [ -z "$LATEST_XAMPP_URL" ]; then
   echo "Error: No se pudo obtener la URL de la última versión de XAMPP."
-  exit 1
+  echo "Descargando manualmente la versión 8.2.4..."
+  LATEST_XAMPP_URL="https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.4/xampp-linux-x64-8.2.4-0-installer.run/download"
 fi
 
 wget "$LATEST_XAMPP_URL" -O xampp-installer.run
